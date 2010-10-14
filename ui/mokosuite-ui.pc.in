@@ -1,0 +1,13 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+datarootdir=@datarootdir@
+datadir=@datadir@
+
+Name: mokosuite-ui
+Description: Mokosuite UI library
+Version: @VERSION@
+Requires: elementary glib-2.0
+Libs: -L${libdir} -lmokosuite-ui
+Cflags: -I${includedir}/mokosuite
