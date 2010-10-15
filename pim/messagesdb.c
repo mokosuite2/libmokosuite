@@ -14,9 +14,7 @@
 #include "messagesdb.h"
 #include "utils/misc.h"
 
-static GHashTable* threads = NULL;
-
-static void handle_message_for_thread(GHashTable* row)
+static MessageThread* handle_message_for_thread(GHashTable* row)
 {
     const char* _peer = map_get_attribute(row, "Peer");
 
@@ -24,50 +22,24 @@ static void handle_message_for_thread(GHashTable* row)
         char* peer = phone_utils_normalize_number(_peer);
         if (peer == NULL) peer = g_strdup(_peer);
 
-        g_debug("Handling message %p with %s", row, peer);
-        MessageThread* t = g_hash_table_lookup(threads, peer);
+        g_debug("Handling thread with %s", peer);
 
         const char* _direction = map_get_attribute(row, "Direction");
         int direction = !strcasecmp(_direction, "in") ? DIRECTION_INCOMING : DIRECTION_OUTGOING;
-        gboolean unread = (g_hash_table_lookup(row, "MessageRead") == NULL) ?
-            FALSE : (map_get_attribute_int(row, "MessageRead") == 0);
 
-        int timestamp = map_get_attribute_int(row, "Timestamp");
-
-        if (!t) {
-            t = g_new0(MessageThread, 1);
-            t->peer = g_strdup(peer);
-            t->content = g_strdup(map_get_attribute(row, "Content"));
-            t->timestamp = timestamp;
-
-            g_hash_table_insert(threads, g_strdup(peer), t);
-        }
-
-        // messaggio non letto -- precedenza sugli altri
-        if (unread) {
-            if (t->total_count > 0) {
-                // content
-                if (t->content)
-                    g_free(t->content);
-
-                t->content = g_strdup(map_get_attribute(row, "Content"));
-
-                // timestamp
-                t->timestamp = timestamp;
-            }
-
-            // unread count
-            t->unread_count++;
-        }
-
-        // direction
+        MessageThread* t = g_new0(MessageThread, 1);
+        t->peer = peer;
+        t->content = g_strdup(map_get_attribute(row, "Content"));
+        t->timestamp = map_get_attribute_int(row, "Timestamp");
+        t->content = g_strdup(map_get_attribute(row, "Content"));
         t->direction = direction;
+        t->unread_count = map_get_attribute_int(row, "UnreadCount");
+        t->total_count = map_get_attribute_int(row, "TotalCount");
 
-        // total count
-        t->total_count++;
-
-        g_free(peer);
+        return t;
     }
+
+    return NULL;
 }
 
 typedef struct {
@@ -79,12 +51,6 @@ typedef struct {
     gpointer userdata;
     char* path;
 } query_data_t;
-
-static void _thread_userfunc(gpointer key, gpointer value, gpointer userdata)
-{
-    query_data_t* data = userdata;
-    (data->func)((MessageThread*) value, data->userdata);
-}
 
 static void _cb_thread_query(GError* error, const char* path, gpointer userdata);
 
@@ -100,10 +66,6 @@ static void _cb_thread_next(GError* error, GHashTable* row, gpointer userdata)
         // distruggi query
         opimd_messagequery_dispose(data->path, NULL, NULL);
 
-        // richiama il callback per ogni thread trovato
-        if (data->func)
-            g_hash_table_foreach(threads, _thread_userfunc, data);
-
         // distruggi dati callback
         g_free(data->path);
         g_free(data);
@@ -111,7 +73,9 @@ static void _cb_thread_next(GError* error, GHashTable* row, gpointer userdata)
         return;
     }
 
-    handle_message_for_thread(row);
+    MessageThread* t = handle_message_for_thread(row);
+    if (t && data->func)
+        (data->func)(t, data->userdata);
 
     opimd_messagequery_get_result(data->path, _cb_thread_next, data);
 }
@@ -121,7 +85,7 @@ static gboolean _retry_thread_query(gpointer userdata)
     query_data_t* data = userdata;
     g_timer_start(data->timer);
 
-    opimd_messages_query(data->query, _cb_thread_query, data);
+    opimd_messages_query_threads(data->query, _cb_thread_query, data);
     return FALSE;
 }
 
@@ -159,17 +123,12 @@ void messagesdb_foreach_thread(MessageThreadFunc func, gpointer data)
     query_data_t* cbdata = g_new0(query_data_t, 1);
 
     cbdata->timer = g_timer_new();
-    cbdata->query = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_value_free);
+    // no free functions because it's not used
+    cbdata->query = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, NULL);
     cbdata->userdata = data;
     cbdata->func = func;
 
-    g_hash_table_insert(cbdata->query, g_strdup("_sortby"),
-        g_value_from_string("Timestamp"));
-
-    g_hash_table_insert(cbdata->query, g_strdup("_sortdesc"),
-        g_value_from_int(1));
-
-    opimd_messages_query(cbdata->query, _cb_thread_query, cbdata);
+    opimd_messages_query_threads(cbdata->query, _cb_thread_query, cbdata);
 }
 
 void messagesdb_init(MessageThreadFunc func, gpointer userdata)
@@ -178,6 +137,4 @@ void messagesdb_init(MessageThreadFunc func, gpointer userdata)
 
     if (opimdMessagesBus == NULL)
         g_warning("Unable to connect to messages database; will not be able to read messages");
-
-    threads = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);
 }
