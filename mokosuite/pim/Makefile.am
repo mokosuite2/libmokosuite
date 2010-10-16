@@ -24,7 +24,8 @@ libmokosuite_pimincludedir = $(includedir)/mokosuite-0/mokosuite/pim
 libmokosuite_piminclude_HEADERS = \
 	callsdb.h \
 	contactsdb.h \
-	messagesdb.h
+	messagesdb.h \
+	pim.h
 
 lib_LTLIBRARIES = libmokosuite-pim.la
 
@@ -34,7 +35,9 @@ libmokosuite_pim_la_SOURCES = \
 	contactsdb.c \
 	contactsdb.h \
 	messagesdb.c \
-	messagesdb.h
+	messagesdb.h \
+	pim.c \
+	pim.h
 
 libmokosuite_pim_la_LDFLAGS = -version-info 0:0:0 -L../utils -lmokosuite-utils
 
