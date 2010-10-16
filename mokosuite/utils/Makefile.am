@@ -1,11 +1,13 @@
 AM_CPPFLAGS = \
 	@GLIB_CFLAGS@ 	\
 	@EINA_CFLAGS@	\
+	@ECORE_CFLAGS@	\
 	-Wall
 
 AM_LDFLAGS = \
-	@GLIB_LIBS@	\
-	@EINA_LIBS@
+	@GLIB_LIBS@		\
+	@EINA_LIBS@ 	\
+	@ECORE_LIBS@
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = mokosuite-utils.pc

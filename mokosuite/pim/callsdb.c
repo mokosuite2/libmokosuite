@@ -11,7 +11,7 @@
 #include <freesmartphone-glib/opimd/callquery.h>
 
 #include "callsdb.h"
-#include "utils/misc.h"
+#include "../utils/misc.h"
 
 static CallEntry* handle_call_data(GHashTable* row)
 {

@@ -7,7 +7,7 @@
 #include <phone-utils.h>
 
 #include "contactsdb.h"
-#include "utils/misc.h"
+#include "../utils/misc.h"
 
 time_t contactsdb_timestamp = -1;
 char* contactsdb_path = NULL;

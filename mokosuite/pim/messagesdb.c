@@ -12,7 +12,7 @@
 #include <freesmartphone-glib/opimd/messagequery.h>
 
 #include "messagesdb.h"
-#include "utils/misc.h"
+#include "../utils/misc.h"
 
 static MessageThread* handle_message_for_thread(GHashTable* row)
 {

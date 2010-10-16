@@ -1,15 +1,17 @@
+#include <glib.h>
+#include <Ecore.h>
 #include "globals.h"
 #include "cfg.h"
 
 #define SAVE_SCHEDULE_TIMEOUT           3
 
 static GKeyFile *config = NULL;
-static guint save_job = 0;
+static Ecore_Timer* save_job = NULL;
 static char* cfg_file = NULL;
 
-static gboolean _save_job(gpointer data)
+static bool _save_job(void* data)
 {
-    save_job = 0;
+    save_job = NULL;
     config_save();
     return FALSE;
 }
@@ -17,7 +19,7 @@ static gboolean _save_job(gpointer data)
 static void schedule_save(void)
 {
     if (!save_job)
-        save_job = g_timeout_add_seconds(SAVE_SCHEDULE_TIMEOUT, _save_job, NULL);
+        save_job = ecore_timer_add(SAVE_SCHEDULE_TIMEOUT, _save_job, NULL);
 }
 
 void config_init(const char* file)
@@ -36,12 +38,12 @@ void config_init(const char* file)
     }
 }
 
-gboolean config_save(void)
+bool config_save(void)
 {
     return g_file_set_contents(cfg_file, g_key_file_to_data(config, NULL, NULL), -1, NULL);
 }
 
-gboolean config_has_key(const char *group, const char *key)
+bool config_has_key(const char *group, const char *key)
 {
     // nella documentazione non cita NULL per l'error... boh...
     return g_key_file_has_key(config, group, key, NULL);

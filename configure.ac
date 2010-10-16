@@ -133,13 +133,14 @@ fi
 AC_OUTPUT([
 Makefile
 po/Makefile.in
+mokosuite/Makefile
 
-ui/Makefile
-ui/mokosuite-ui.pc
+mokosuite/ui/Makefile
+mokosuite/ui/mokosuite-ui.pc
 
-pim/Makefile
-pim/mokosuite-pim.pc
+mokosuite/pim/Makefile
+mokosuite/pim/mokosuite-pim.pc
 
-utils/Makefile
-utils/mokosuite-utils.pc
+mokosuite/utils/Makefile
+mokosuite/utils/mokosuite-utils.pc
 ])

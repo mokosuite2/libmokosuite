@@ -1,7 +1,7 @@
 #ifndef __CONFIG_H
 #define __CONFIG_H
 
-#include <glib.h>
+#include <mokosuite/utils/utils.h>
 
 /**
  * Carica la configurazione globale di base.
@@ -12,12 +12,12 @@ void config_init(const char* file);
  * Salva la configurazione su file.
  * @return true se la configurazione è stata salvata con successo
  */
-gboolean config_save(void);
+bool config_save(void);
 
 /**
  * TODO
  */
-gboolean config_has_key(const char *group, const char *key);
+bool config_has_key(const char *group, const char *key);
 
 /**
  * Recupera una stringa dalla configurazione.
