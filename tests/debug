@@ -1,1 +1,5 @@
+#!/bin/sh
+
+export PKG_CONFIG_PATH=/opt/mokosuite/lib/pkgconfig:$PKG_CONFIG_PATH
+export LD_LIBRARY_PATH=/opt/mokosuite/lib:$LD_LIBRARY_PATH
 gcc -g `pkg-config --cflags --libs mokosuite-pim glib-2.0 dbus-glib-1` msgs.c -o msgs && gdb ./msgs

@@ -1,4 +1,4 @@
-SUBDIRS = utils pim ui
+SUBDIRS = utils pim ui po
 
 MAINTAINERCLEANFILES = aclocal.m4 compile config.guess config.sub \
                        configure depcomp install-sh  \

@@ -35,6 +35,7 @@ EDJE_REQUIRED=0.0.0
 ECORE_REQUIRED=0.0.0
 EDBUS_REQUIRED=0.5.0
 EFREET_REQUIRED=0.5.0
+EINA_REQUIRED=0.5.0
 GLIB_REQUIRED=2.18.0
 DBUS_REQUIRED=1.1.1
 DBUS_GLIB_REQUIRED=0.74
@@ -68,6 +69,8 @@ PKG_CHECK_MODULES(ECORE,
   ecore-input >= $ECORE_REQUIRED
   eet >= $ECORE_REQUIRED
 )
+
+PKG_CHECK_MODULES(EINA, eina >= $EINA_REQUIRED)
 
 PKG_CHECK_MODULES(EFREET, efreet >= $EFREET_REQUIRED)
 
@@ -118,6 +121,14 @@ fi
 
 AM_CONDITIONAL(ENABLE_CONTACTSDB_SQLITE, test "x$enable_contactsdb_sqlite" = "xyes")
 
+AC_ARG_ENABLE(debug,
+    AC_HELP_STRING([--enable-debug], [Enable debug build (default: disabled)]),
+    enable_debug=$enableval,
+    enable_debug=no)
+
+if test "x$enable_debug" != "xno"; then
+    AC_DEFINE(DEBUG, 1, [Define to enable debug build])
+fi
 
 AC_OUTPUT([
 Makefile
