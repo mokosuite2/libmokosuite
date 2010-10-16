@@ -20,7 +20,7 @@ endif
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = mokosuite-pim.pc
 
-libmokosuite_pimincludedir = $(includedir)/mokosuite/pim
+libmokosuite_pimincludedir = $(includedir)/mokosuite-0/mokosuite/pim
 libmokosuite_piminclude_HEADERS = \
 	callsdb.h \
 	contactsdb.h \

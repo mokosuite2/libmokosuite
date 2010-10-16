@@ -10,7 +10,7 @@ AM_LDFLAGS = \
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = mokosuite-utils.pc
 
-libmokosuite_utilsincludedir = $(includedir)/mokosuite/utils
+libmokosuite_utilsincludedir = $(includedir)/mokosuite-0/mokosuite/utils
 libmokosuite_utilsinclude_HEADERS = \
 	misc.h \
 	cfg.h \

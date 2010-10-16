@@ -10,4 +10,4 @@ Description: Mokosuite PIM library
 Version: @VERSION@
 Requires: dbus-glib-1 glib-2.0 libfreesmartphone-glib libphone-utils mokosuite-utils
 Libs: -L${libdir} -lmokosuite-pim
-Cflags: -I${includedir}/mokosuite
+Cflags: -I${includedir}/mokosuite-0
