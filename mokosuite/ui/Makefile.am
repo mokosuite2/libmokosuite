@@ -1,7 +1,7 @@
 AM_CPPFLAGS = \
 	@GLIB_CFLAGS@ 			\
 	@ELEMENTARY_CFLAGS@		\
-	-Wall
+	-Wall -DDATADIR=\""$(datadir)"\"
 
 AM_LDFLAGS = \
 	@GLIB_LIBS@			\

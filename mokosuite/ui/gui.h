@@ -234,4 +234,7 @@ typedef struct _MokoList MokoList;
 
 MokoList* moko_list_new(Evas_Object* parent);
 
+
+void mokosuite_ui_init(void);
+
 #endif  /* __MOKOSUITE_UI_GUI_H */

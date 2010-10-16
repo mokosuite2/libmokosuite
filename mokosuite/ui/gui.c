@@ -461,3 +461,16 @@ MokoPopupSlider* moko_popup_slider_new(MokoWin *parent, const char *message, int
 
     return p;
 }
+
+void mokosuite_ui_init(void)
+{
+    elm_theme_extension_add(NULL, MOKOSUITE_DATADIR "/theme.edj");
+
+    elm_theme_overlay_add(NULL, "elm/label/base_wrap/default");
+
+    elm_theme_overlay_add(NULL, "elm/genlist/item/generic_sub/default");
+    elm_theme_overlay_add(NULL, "elm/genlist/item_odd/generic_sub/default");
+
+    elm_theme_overlay_add(NULL, "elm/genlist/item/generic/default");
+    elm_theme_overlay_add(NULL, "elm/genlist/item_odd/generic/default");
+}

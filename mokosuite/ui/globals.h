@@ -8,6 +8,8 @@
 #include <Eina.h>
 #include <Elementary.h>
 
+#define MOKOSUITE_DATADIR       DATADIR "/mokosuite/common"
+
 #ifdef DEBUG
 #define LOG_LEVEL   EINA_LOG_LEVEL_DBG
 #else

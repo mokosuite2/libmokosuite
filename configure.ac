@@ -96,6 +96,7 @@ AC_ARG_WITH(edje-cc,
 ],[
   edje_cc=$(pkg-config --variable=prefix edje)/bin/edje_cc
 ])
+AC_SUBST(edje_cc)
 
 dnl Settings storage
 AC_ARG_ENABLE(settings_config,
@@ -134,6 +135,9 @@ AC_OUTPUT([
 Makefile
 po/Makefile.in
 mokosuite/Makefile
+data/Makefile
+data/themes/Makefile
+data/themes/gry/Makefile
 
 mokosuite/ui/Makefile
 mokosuite/ui/mokosuite-ui.pc
