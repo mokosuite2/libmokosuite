@@ -17,8 +17,7 @@ libmokosuite_utilsincludedir = $(includedir)/mokosuite-0/mokosuite/utils
 libmokosuite_utilsinclude_HEADERS = \
 	misc.h \
 	cfg.h \
-	utils.h \
-	notifications.h
+	utils.h
 
 lib_LTLIBRARIES = libmokosuite-utils.la
 
@@ -29,7 +28,6 @@ libmokosuite_utils_la_SOURCES = \
 	cfg.h \
 	utils.c \
 	utils.h \
-	notifications.h \
 	globals.h
 
 libmokosuite_utils_la_LDFLAGS = -version-info 0:0:0
