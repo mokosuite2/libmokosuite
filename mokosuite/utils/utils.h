@@ -16,6 +16,8 @@ typedef Eina_Bool bool;
 #define TRUE    EINA_TRUE
 #define FALSE   EINA_FALSE
 
+#define MOKOSUITE_DBUS_PATH     "/org/mokosuite"
+
 void mokosuite_utils_init(void);
 
 #endif  /* __MOKOSUITE_UTILS_UTILS_H */
