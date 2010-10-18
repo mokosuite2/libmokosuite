@@ -10,8 +10,10 @@
 /**
  * Restituisce un attributo in una HashTable proveniente da FSO.
  */
-const char* map_get_attribute(GHashTable* properties, const char* key)
+const char* map_get_string(GHashTable* properties, const char* key)
 {
+    if (!properties) return NULL;
+
     const char* value = NULL;
     GValue* gval = NULL;
 
@@ -24,8 +26,10 @@ const char* map_get_attribute(GHashTable* properties, const char* key)
     return value;
 }
 
-int map_get_attribute_int(GHashTable* properties, const char* key)
+int map_get_int(GHashTable* properties, const char* key)
 {
+    if (!properties) return -1;
+
     int value = 0;
     GValue* gval = NULL;
 
@@ -38,8 +42,10 @@ int map_get_attribute_int(GHashTable* properties, const char* key)
     return value;
 }
 
-gboolean map_get_attribute_bool(GHashTable* properties, const char* key, gboolean fallback_int)
+gboolean map_get_bool(GHashTable* properties, const char* key, gboolean fallback_int)
 {
+    if (!properties) return FALSE;
+
     gboolean value = FALSE;
     GValue* gval = NULL;
 

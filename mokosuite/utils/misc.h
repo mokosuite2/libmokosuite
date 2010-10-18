@@ -5,9 +5,9 @@
 #include <glib-object.h>
 #include <time.h>
 
-const char* map_get_attribute(GHashTable* properties, const char* key);
-int map_get_attribute_int(GHashTable* properties, const char* key);
-gboolean map_get_attribute_bool(GHashTable* properties, const char* key, gboolean fallback_int);
+const char* map_get_string(GHashTable* properties, const char* key);
+int map_get_int(GHashTable* properties, const char* key);
+gboolean map_get_bool(GHashTable* properties, const char* key, gboolean fallback_int);
 
 void g_value_free(gpointer data);
 

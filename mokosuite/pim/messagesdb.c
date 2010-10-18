@@ -16,7 +16,7 @@
 
 static MessageThread* handle_message_for_thread(GHashTable* row)
 {
-    const char* _peer = map_get_attribute(row, "Peer");
+    const char* _peer = map_get_string(row, "Peer");
 
     if (_peer != NULL) {
         char* peer = phone_utils_normalize_number(_peer);
@@ -24,17 +24,17 @@ static MessageThread* handle_message_for_thread(GHashTable* row)
 
         g_debug("Handling thread with %s", peer);
 
-        const char* _direction = map_get_attribute(row, "Direction");
+        const char* _direction = map_get_string(row, "Direction");
         int direction = !strcasecmp(_direction, "in") ? DIRECTION_INCOMING : DIRECTION_OUTGOING;
 
         MessageThread* t = g_new0(MessageThread, 1);
         t->peer = peer;
-        t->content = g_strdup(map_get_attribute(row, "Content"));
-        t->timestamp = map_get_attribute_int(row, "Timestamp");
-        t->content = g_strdup(map_get_attribute(row, "Content"));
+        t->content = g_strdup(map_get_string(row, "Content"));
+        t->timestamp = map_get_int(row, "Timestamp");
+        t->content = g_strdup(map_get_string(row, "Content"));
         t->direction = direction;
-        t->unread_count = map_get_attribute_int(row, "UnreadCount");
-        t->total_count = map_get_attribute_int(row, "TotalCount");
+        t->unread_count = map_get_int(row, "UnreadCount");
+        t->total_count = map_get_int(row, "TotalCount");
 
         return t;
     }

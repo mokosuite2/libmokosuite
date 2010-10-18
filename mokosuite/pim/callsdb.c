@@ -15,25 +15,25 @@
 
 static CallEntry* handle_call_data(GHashTable* row)
 {
-    const char* _peer = map_get_attribute(row, "Peer");
+    const char* _peer = map_get_string(row, "Peer");
 
     if (_peer != NULL) {
         CallEntry *e = g_new0(CallEntry, 1);
 
-        e->id = map_get_attribute_int(row, "EntryId");
+        e->id = map_get_int(row, "EntryId");
         //g_debug("[%s] Call entry id %lld", __func__, e->id);
 
         e->peer = g_strdup(_peer);
-        const char* _direction = map_get_attribute(row, "Direction");
+        const char* _direction = map_get_string(row, "Direction");
         e->direction = !strcasecmp(_direction, "in") ? DIRECTION_INCOMING : DIRECTION_OUTGOING;
 
-        e->timestamp = map_get_attribute_int(row, "Timestamp");
+        e->timestamp = map_get_int(row, "Timestamp");
 
-        const char* _duration = map_get_attribute(row, "Duration");
+        const char* _duration = map_get_string(row, "Duration");
         e->duration = (_duration != NULL) ? g_ascii_strtoull(_duration, NULL, 10) : 0;
 
-        e->answered = (map_get_attribute_int(row, "Answered") != 0);
-        e->is_new = (map_get_attribute_int(row, "New") != 0);
+        e->answered = (map_get_int(row, "Answered") != 0);
+        e->is_new = (map_get_int(row, "New") != 0);
 
         return e;
     }
