@@ -2,7 +2,7 @@ AM_CPPFLAGS = \
 	@GLIB_CFLAGS@ 	\
 	@EINA_CFLAGS@	\
 	@ECORE_CFLAGS@	\
-	@FSO_CFLAGS@	\
+	@DBUS_CFLAGS@	\
 	@SQLITE_CFLAGS@	\
 	-Wall
 
@@ -20,6 +20,7 @@ libmokosuite_utilsinclude_HEADERS = \
 	$(libmokosuite_utils_VALASOURCES:.vala=.h) \
 	settings.h \
 	misc.h \
+	dbus.h \
 	utils.h
 
 lib_LTLIBRARIES = libmokosuite-utils.la
@@ -47,13 +48,16 @@ libmokosuite_utils_la_SOURCES = \
 	misc.h \
 	utils.c \
 	utils.h \
+	dbus.c \
+	dbus.h \
 	globals.h
 
 libmokosuite_utils_la_LDFLAGS = \
 	-version-info 0:0:0 \
-	@GLIB_LIBS@	\
+	@GLIB_LIBS@		\
 	@EINA_LIBS@ 	\
 	@ECORE_LIBS@	\
+	@DBUS_CFLAGS@	\
 	@SQLITE_LIBS@
 
 settings-glue.h: settings.xml
