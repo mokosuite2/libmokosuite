@@ -1,3 +1,6 @@
+[CCode (has_target = false)]
+public delegate void RemoteSettingsCallback (string key, string? value);
+
 [DBus (name = "org.mokosuite.Settings")]
 public class RemoteSettingsDatabase : GLib.Object {
 
@@ -10,10 +13,12 @@ public class RemoteSettingsDatabase : GLib.Object {
 
     private Sqlite.Database _conn;
     private HashTable<string,string> _store;    // store in caso di mancata connessione
+    private HashTable<string,void*> _callbacks;
 
     public Sqlite.Database connection { get { return _conn; } }
 
     public RemoteSettingsDatabase(DBus.Connection system_bus, string path, string db_file) {
+        _callbacks = new HashTable<string,void*>(str_hash, str_equal);
 
         system_bus.register_object (path, this);
 
@@ -30,9 +35,20 @@ public class RemoteSettingsDatabase : GLib.Object {
         }
     }
 
+    [DBus (visible=false)]
+    public void callback_add(string key, RemoteSettingsCallback callback) {
+        _callbacks.replace(key, (void*) callback);
+    }
+
+    [DBus (visible=false)]
+    public void callback_remove(string key) {
+        _callbacks.remove(key);
+    }
+
     /* === D-BUS API === */
 
-    public string GetSetting(string key, string default_value = "") {
+    public string GetSetting(string key, string? default_value)
+    {
         string val = null;
 
         if (_conn != null) {
@@ -60,7 +76,8 @@ public class RemoteSettingsDatabase : GLib.Object {
         return (val != null) ? val : default_value;
     }
 
-    public HashTable<string,string>? GetAllSettings() {
+    public HashTable<string,string>? GetAllSettings()
+    {
         HashTable<string,string> val = null;
 
         if (_conn != null) {
@@ -88,7 +105,8 @@ public class RemoteSettingsDatabase : GLib.Object {
         return val;
     }
 
-    public void SetSetting(string key, string? str_value) {
+    public void SetSetting(string key, string? str_value)
+    {
 
         if (_conn != null) {
             if (str_value != null)
@@ -99,6 +117,9 @@ public class RemoteSettingsDatabase : GLib.Object {
             _store.insert(key, str_value.dup());
         }
 
+        RemoteSettingsCallback cb = (RemoteSettingsCallback) _callbacks.lookup(key);
+        if (cb != null)
+            cb(key, str_value);
     }
 
 }

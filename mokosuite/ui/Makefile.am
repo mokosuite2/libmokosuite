@@ -3,10 +3,6 @@ AM_CPPFLAGS = \
 	@ELEMENTARY_CFLAGS@		\
 	-Wall -DDATADIR=\""$(datadir)"\"
 
-AM_LDFLAGS = \
-	@GLIB_LIBS@			\
-	@ELEMENTARY_LIBS@
-
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = mokosuite-ui.pc
 
@@ -22,7 +18,10 @@ libmokosuite_ui_la_SOURCES = \
 	gui.c \
 	gui.h
 
-libmokosuite_ui_la_LDFLAGS = -version-info 0:0:0
+libmokosuite_ui_la_LDFLAGS = \
+	-version-info 0:0:0 	\
+	@GLIB_LIBS@		\
+	@ELEMENTARY_LIBS@
 
 EXTRA_DIST = \
 	mokosuite-ui.pc.in

@@ -3,12 +3,8 @@ AM_CPPFLAGS = \
 	@EINA_CFLAGS@	\
 	@ECORE_CFLAGS@	\
 	@FSO_CFLAGS@	\
+	@SQLITE_CFLAGS@	\
 	-Wall
-
-AM_LDFLAGS = \
-	@GLIB_LIBS@		\
-	@EINA_LIBS@ 	\
-	@ECORE_LIBS@
 
 VALAC_ARGS = \
 	--pkg dbus-glib-1 \
@@ -22,12 +18,16 @@ pkgconfig_DATA = mokosuite-utils.pc
 libmokosuite_utilsincludedir = $(includedir)/mokosuite-0/mokosuite/utils
 libmokosuite_utilsinclude_HEADERS = \
 	$(libmokosuite_utils_VALASOURCES:.vala=.h) \
+	settings.h \
 	misc.h \
 	utils.h
 
 lib_LTLIBRARIES = libmokosuite-utils.la
 
-BUILT_SOURCES = .vala.stamp
+dbus_sources = \
+	settings-glue.h
+
+BUILT_SOURCES = $(dbus_sources) .vala.stamp
 
 #sed -i 's/\#include <settingsdb.h>//' settingsdb.c
 .vala.stamp: $(libmokosuite_utils_VALASOURCES)
@@ -38,14 +38,26 @@ libmokosuite_utils_VALASOURCES = \
 	settingsdb.vala
 
 libmokosuite_utils_la_SOURCES = \
+	$(dbus_sources) \
 	$(libmokosuite_utils_VALASOURCES:.vala=.c) \
+	$(libmokosuite_utils_VALASOURCES:.vala=.h) \
+	settings.c \
+	settings.h \
 	misc.c \
 	misc.h \
 	utils.c \
 	utils.h \
 	globals.h
 
-libmokosuite_utils_la_LDFLAGS = -version-info 0:0:0
+libmokosuite_utils_la_LDFLAGS = \
+	-version-info 0:0:0 \
+	@GLIB_LIBS@	\
+	@EINA_LIBS@ 	\
+	@ECORE_LIBS@	\
+	@SQLITE_LIBS@
+
+settings-glue.h: settings.xml
+	dbus-binding-tool --mode=glib-client --prefix=moko_settings --output=$@ $<
 
 EXTRA_DIST = \
 	mokosuite-utils.pc.in \
