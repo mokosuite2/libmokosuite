@@ -4,20 +4,38 @@
 #include "dbus.h"
 #include "globals.h"
 
-bool dbus_request_name(const char* name)
+static DBusGConnection* _dbus_bus(int bus_type)
+{
+    GError *e = NULL;
+    DBusGConnection* bus = dbus_g_bus_get(bus_type, &e);
+    if (e) {
+        EINA_LOG_ERR("unable to connect to %s bus: %s",
+            (bus_type == DBUS_BUS_SYSTEM) ? "system" : "session",
+            e->message);
+        g_error_free(e);
+        return NULL;
+    }
+
+    return bus;
+}
+
+DBusGConnection* dbus_system_bus(void)
+{
+    return _dbus_bus(DBUS_BUS_SYSTEM);
+}
+
+DBusGConnection* dbus_session_bus(void)
+{
+    return _dbus_bus(DBUS_BUS_SESSION);
+}
+
+bool dbus_request_name(DBusGConnection* bus, const char* name)
 {
     GError *e = NULL;
     DBusGProxy *driver_proxy;
     guint request_ret;
 
-    DBusGConnection* system_bus = dbus_g_bus_get(DBUS_BUS_SYSTEM, &e);
-    if (e) {
-        EINA_LOG_ERR("unable to connect to system bus: %s", e->message);
-        g_error_free(e);
-        return FALSE;
-    }
-
-    driver_proxy = dbus_g_proxy_new_for_name (system_bus,
+    driver_proxy = dbus_g_proxy_new_for_name (bus,
             DBUS_SERVICE_DBUS,
             DBUS_PATH_DBUS,
             DBUS_INTERFACE_DBUS);
