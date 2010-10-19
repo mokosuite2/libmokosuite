@@ -54,10 +54,10 @@ libmokosuite_utils_la_SOURCES = \
 
 libmokosuite_utils_la_LDFLAGS = \
 	-version-info 0:0:0 \
-	@GLIB_LIBS@		\
-	@EINA_LIBS@ 	\
-	@ECORE_LIBS@	\
-	@DBUS_CFLAGS@	\
+	@GLIB_LIBS@			\
+	@EINA_LIBS@ 		\
+	@ECORE_LIBS@		\
+	@DBUS_LIBS@			\
 	@SQLITE_LIBS@
 
 settings-glue.h: settings.xml
