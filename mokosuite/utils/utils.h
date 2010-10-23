@@ -19,5 +19,6 @@ typedef Eina_Bool bool;
 #define MOKOSUITE_DBUS_PATH     "/org/mokosuite"
 
 void mokosuite_utils_init(void);
+bool mokosuite_utils_glib_init(bool init_gtype);
 
 #endif  /* __MOKOSUITE_UTILS_UTILS_H */
