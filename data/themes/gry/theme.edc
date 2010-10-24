@@ -2973,4 +2973,38 @@ group { name: "elm/genlist/item/generic_sub/default";
       }
    } /* elm/genlist/item/generic/default */
 
+    group { name: "elm/label/base/header";
+        styles {
+            style { name: "headertext_style";
+                base: "font=Sans font_size=10 align=left color=#fff style=outline style=Bold outline_color=#fff wrap=word";
+                
+                tag:  "hilight" "+ font=Sans:style=Bold";
+                tag:  "b" "+ font=Sans:style=Bold";
+            }
+        }
+        parts {
+            part { name: "bg";
+                type: RECT;
+                description { state: "default" 0.0;
+                    color: COLOR_GREEN;
+                    visible: 1;
+                    rel1.relative: 0 0;
+                    rel2.relative: 1 1;
+                }
+            }
+            part { name: "elm.text";
+                type: TEXTBLOCK;
+                mouse_events: 0;
+                scale: 1;
+                description { state: "default" 0.0;
+                    rel1.offset: 5 0;
+                    text {
+                        style: "headertext_style";
+                        min: 1 0;
+                    }
+                }
+            }
+        }
+    }
+
 }

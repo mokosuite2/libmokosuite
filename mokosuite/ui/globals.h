@@ -24,7 +24,7 @@ extern int _mokosuite_ui_log_dom;
 #endif
 #define MOKOSUITE_UI_LOG_COLOR   EINA_COLOR_ORANGE
 
-#define MOKOSUITE_UI_LOG_DOM _MOKOSUITE_UI_log_dom
+#define MOKOSUITE_UI_LOG_DOM _mokosuite_ui_log_dom
 
 #ifdef ERROR
 #undef ERROR
@@ -33,7 +33,7 @@ extern int _mokosuite_ui_log_dom;
 #ifdef DEBUG
 #undef DEBUG
 #endif
-#define DEBUG(fmt, ...) EINA_LOG_DOM_DBG(MOKOSUITE_UI_LOG_DOM, fmt, __VA_ARGS__)
+#define DEBUG(...) EINA_LOG_DOM_DBG(MOKOSUITE_UI_LOG_DOM, __VA_ARGS__)
 #ifdef INFO
 #undef INFO
 #endif

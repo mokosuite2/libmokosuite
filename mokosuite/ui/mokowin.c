@@ -19,6 +19,7 @@
  */
 
 #include <glib.h>
+#include "globals.h"
 #include "gui.h"
 
 #define MENU_MAX_PRESS_TIME     800
@@ -42,7 +43,7 @@ static void _close(void *mokowin, Evas_Object *obj, void *event_info)
     }
 
     if (mw->menu_hover != NULL) {
-        EINA_LOG_DBG("Hover visible: %d", (int)evas_object_visible_get(mw->menu_hover));
+        DEBUG("Hover visible: %d", (int)evas_object_visible_get(mw->menu_hover));
         if (evas_object_visible_get(mw->menu_hover)) {
             mokowin_menu_hide(mw);
             return;
@@ -77,7 +78,7 @@ static void _key_down(void *mokowin, Evas *e, Evas_Object *obj, void *event_info
     // FIXME bisogna aggiustare sta cosa pero'...
     MokoWin *mw = (MokoWin*)mokowin;
     Evas_Event_Key_Down *event = (Evas_Event_Key_Down*)event_info;
-    EINA_LOG_DBG("Keyboard(down): %s, %u, %d", event->keyname, event->timestamp, (int) (event->timestamp - mw->last_keystamp));
+    DEBUG("Keyboard(down): %s, %u, %d", event->keyname, event->timestamp, (int) (event->timestamp - mw->last_keystamp));
     mw->key_down = TRUE;
 }
 
@@ -86,7 +87,7 @@ static void _key_up(void *mokowin, Evas *e, Evas_Object *obj, void *event_info)
     MokoWin *mw = (MokoWin*)mokowin;
 
     Evas_Event_Key_Up *event = (Evas_Event_Key_Up*)event_info;
-    EINA_LOG_DBG("Keyboard(up): %s, %u, %d", event->keyname, event->timestamp, (int) (event->timestamp - mw->last_keystamp));
+    DEBUG("Keyboard(up): %s, %u, %d", event->keyname, event->timestamp, (int) (event->timestamp - mw->last_keystamp));
 
     if ((!strcmp(event->keyname, MENU_KEY_PRIMARY1) ||
          !strcmp(event->keyname, MENU_KEY_PRIMARY2) ||
@@ -161,6 +162,26 @@ Evas_Object* mokowin_vbox_button_with_callback(MokoWin* mw, const char* label,
     evas_object_smart_callback_add(bt, "clicked", callback, data);
 
     return bt;
+}
+
+void mokowin_pack_start(MokoWin *mw, Evas_Object *obj)
+{
+    g_return_if_fail(mw != NULL && obj != NULL && mw->vbox != NULL);
+
+    if (mw->title)
+        elm_box_pack_after(mw->vbox, obj, mw->title);
+    else
+        elm_box_pack_start(mw->vbox, obj);
+}
+
+void mokowin_pack_end(MokoWin *mw, Evas_Object *obj)
+{
+    g_return_if_fail(mw != NULL && obj != NULL && mw->vbox != NULL);
+
+    if (mw->menu_hover)
+        elm_box_pack_before(mw->vbox, obj, mw->menu_hover);
+    else
+        elm_box_pack_end(mw->vbox, obj);
 }
 
 void mokowin_delete_data_set(MokoWin *mw, void* data)
@@ -314,6 +335,42 @@ void mokowin_create_vbox(MokoWin *mw, bool scroller)
     evas_object_show(mw->vbox);
 }
 
+/**
+ * Set a title header for the window.
+ * @param mw
+ * @param title NULL to hide the title
+ */
+void mokowin_set_title(MokoWin *mw, const char* title)
+{
+    // a layout has to be already choosen
+    g_return_if_fail(mw->layout != NULL || mw->vbox != NULL);
+
+    if (!title && mw->title) {
+        evas_object_del(mw->title);
+        mw->title = NULL;
+    }
+
+    else if (title) {
+        if (!mw->title) {
+            mw->title = elm_label_add(mw->win);
+            elm_object_style_set(mw->title, "header");
+            evas_object_size_hint_weight_set(mw->title, EVAS_HINT_EXPAND, 0.0);
+            evas_object_size_hint_align_set(mw->title, EVAS_HINT_FILL, 0.0);
+            evas_object_show(mw->title);
+
+            // add to layout
+            if (mw->vbox)
+                elm_box_pack_start(mw->vbox, mw->title);
+            else {
+                // TODO add to layout
+                DEBUG("Adding title to layout is not supported yet.");
+            }
+        }
+
+        elm_label_label_set(mw->title, title);
+    }
+}
+
 /* versione di mokowin_scroll_freeze_set con struttura helper per callback */
 void mokowin_scroll_freeze_set_callback(ScrollCallbackData *data)
 {
@@ -378,7 +435,7 @@ MokoWin* mokowin_sized_new_with_type(const char *name, size_t size, Elm_Win_Type
     mw->win = elm_win_add(NULL, name, type);
 
     if(mw->win == NULL) {
-        EINA_LOG_WARN("Cannot instantiate window");
+        WARN("Cannot instantiate window");
         free(mw);
         return NULL;
     }
@@ -388,13 +445,13 @@ MokoWin* mokowin_sized_new_with_type(const char *name, size_t size, Elm_Win_Type
     evas_object_smart_callback_add (mw->win, "focus,out", _focus_change, mw);
 
     if (!evas_object_key_grab(mw->win, MENU_KEY_PRIMARY1, 0, 0, FALSE))
-        EINA_LOG_WARN("Unable to grab primary1 key %s", MENU_KEY_PRIMARY1);
+        WARN("Unable to grab primary1 key %s", MENU_KEY_PRIMARY1);
 
     if (!evas_object_key_grab(mw->win, MENU_KEY_PRIMARY2, 0, 0, FALSE))
-        EINA_LOG_WARN("Unable to grab primary2 key %s", MENU_KEY_PRIMARY2);
+        WARN("Unable to grab primary2 key %s", MENU_KEY_PRIMARY2);
 
     if (!evas_object_key_grab(mw->win, MENU_KEY_SECONDARY, 0, 0, FALSE))
-        EINA_LOG_WARN("Unable to grab secondary key %s", MENU_KEY_SECONDARY);
+        WARN("Unable to grab secondary key %s", MENU_KEY_SECONDARY);
 
     evas_object_event_callback_add(mw->win, EVAS_CALLBACK_KEY_DOWN, _key_down, mw);
     evas_object_event_callback_add(mw->win, EVAS_CALLBACK_KEY_UP, _key_up, mw);

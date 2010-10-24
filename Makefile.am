@@ -1,4 +1,4 @@
-SUBDIRS = mokosuite po data
+SUBDIRS = mokosuite po data tests
 
 MAINTAINERCLEANFILES = aclocal.m4 compile config.guess config.sub \
                        configure depcomp install-sh  \

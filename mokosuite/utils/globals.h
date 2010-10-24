@@ -30,7 +30,7 @@ extern int _mokosuite_utils_log_dom;
 #ifdef DEBUG
 #undef DEBUG
 #endif
-#define DEBUG(fmt, ...) EINA_LOG_DOM_DBG(MOKOSUITE_UTILS_LOG_DOM, fmt, __VA_ARGS__)
+#define DEBUG(...) EINA_LOG_DOM_DBG(MOKOSUITE_UTILS_LOG_DOM, __VA_ARGS__)
 #ifdef INFO
 #undef INFO
 #endif

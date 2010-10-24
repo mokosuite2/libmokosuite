@@ -134,6 +134,7 @@ fi
 AC_OUTPUT([
 Makefile
 po/Makefile.in
+tests/Makefile
 mokosuite/Makefile
 data/Makefile
 data/themes/Makefile

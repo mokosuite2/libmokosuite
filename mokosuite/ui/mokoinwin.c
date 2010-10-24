@@ -19,6 +19,7 @@
  */
 
 #include <glib.h>
+#include "globals.h"
 #include "gui.h"
 
 void mokoinwin_activate(MokoInwin *mw)
@@ -56,7 +57,7 @@ MokoInwin *mokoinwin_new(MokoWin *parent)
     mw->inwin = elm_win_inwin_add(parent->win);
 
     if(mw->inwin == NULL) {
-        EINA_LOG_WARN("Cannot instantiate inner window");
+        WARN("Cannot instantiate inner window");
         free(mw);
         return NULL;
     }

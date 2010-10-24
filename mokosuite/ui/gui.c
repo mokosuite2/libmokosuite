@@ -24,6 +24,9 @@
 
 #include <glib/gi18n-lib.h>
 
+int _mokosuite_ui_log_dom = -1;
+
+
 /* -- MokoPopupAlert -- */
 
 static void _popup_alert_delete(void *popup)
@@ -356,7 +359,7 @@ static void _pslider_change(void* data, Evas_Object* obj, void* event_info)
     p->value = (int)elm_slider_value_get(p->slider);
     p->changed = TRUE;
 
-    EINA_LOG_DBG("Slider changed: %d", p->value);
+    DEBUG("Slider changed: %d", p->value);
 
     if (p->callback)
         (p->callback)(data, p->data, p->value, FALSE);
@@ -462,11 +465,22 @@ MokoPopupSlider* moko_popup_slider_new(MokoWin *parent, const char *message, int
     return p;
 }
 
-void mokosuite_ui_init(void)
+void mokosuite_ui_init(int argc, char** argv)
 {
+    // eina log
+    _mokosuite_ui_log_dom = eina_log_domain_register(MOKOSUITE_UI_LOG_NAME, MOKOSUITE_UI_LOG_COLOR);
+    if (_mokosuite_ui_log_dom < 0)
+        printf("Cannot create log domain.\n");
+
+    eina_log_domain_level_set(MOKOSUITE_UI_LOG_NAME, LOG_LEVEL);
+
+    // elementary
+    elm_init(argc, argv);
+
     elm_theme_extension_add(NULL, MOKOSUITE_DATADIR "/theme.edj");
 
     elm_theme_overlay_add(NULL, "elm/label/base_wrap/default");
+    elm_theme_overlay_add(NULL, "elm/label/base/header");
 
     elm_theme_overlay_add(NULL, "elm/genlist/item/generic_sub/default");
     elm_theme_overlay_add(NULL, "elm/genlist/item_odd/generic_sub/default");

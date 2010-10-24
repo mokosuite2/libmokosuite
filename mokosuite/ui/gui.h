@@ -41,6 +41,9 @@ struct _MokoWin {
     Evas_Object *layout;
     Evas_Object *layout_edje;
 
+    /* titolo */
+    Evas_Object* title;
+
     /* menu hover */
     Evas_Object *menu_hover;
     Evas_Object *current_menu;
@@ -79,8 +82,12 @@ void mokowin_menu_show(MokoWin *mw);
 void mokowin_create_layout(MokoWin *mw, const char *file, const char *group);
 void mokowin_create_vbox(MokoWin *mw, bool scroller);
 
+void mokowin_set_title(MokoWin *mw, const char* title);
 void mokowin_menu_enable(MokoWin *mw);
 void mokowin_menu_set(MokoWin *wm, Evas_Object *box);
+
+void mokowin_pack_start(MokoWin *mw, Evas_Object *obj);
+void mokowin_pack_end(MokoWin *mw, Evas_Object *obj);
 
 void mokowin_inner_add(MokoWin *mw, MokoInwin *inwin);
 void mokowin_inner_remove(MokoWin *mw, MokoInwin *inwin);
@@ -235,6 +242,8 @@ typedef struct _MokoList MokoList;
 MokoList* moko_list_new(Evas_Object* parent);
 
 
-void mokosuite_ui_init(void);
+/* MISC */
+void mokosuite_ui_init(int argc, char** argv);
+
 
 #endif  /* __MOKOSUITE_UI_GUI_H */
