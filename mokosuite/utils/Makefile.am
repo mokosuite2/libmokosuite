@@ -8,7 +8,6 @@ AM_CPPFLAGS = \
 
 VALAC_ARGS = \
 	--pkg dbus-glib-1 \
-	--pkg sqlite3 \
 	--save-temps \
 	--basedir $(top_srcdir)/mokosuite/utils
 
@@ -18,7 +17,7 @@ pkgconfig_DATA = mokosuite-utils.pc
 libmokosuite_utilsincludedir = $(includedir)/mokosuite-0/mokosuite/utils
 libmokosuite_utilsinclude_HEADERS = \
 	$(libmokosuite_utils_VALASOURCES:.vala=.h) \
-	settings.h \
+	remoteconfig.h \
 	misc.h \
 	dbus.h \
 	utils.h
@@ -26,7 +25,7 @@ libmokosuite_utilsinclude_HEADERS = \
 lib_LTLIBRARIES = libmokosuite-utils.la
 
 dbus_sources = \
-	settings-glue.h
+	remoteconfig-glue.h
 
 BUILT_SOURCES = $(dbus_sources) .vala.stamp
 
@@ -36,14 +35,14 @@ BUILT_SOURCES = $(dbus_sources) .vala.stamp
 	touch $@
 
 libmokosuite_utils_VALASOURCES = \
-	settingsdb.vala
+	remoteconfig-service.vala
 
 libmokosuite_utils_la_SOURCES = \
 	$(dbus_sources) \
 	$(libmokosuite_utils_VALASOURCES:.vala=.c) \
 	$(libmokosuite_utils_VALASOURCES:.vala=.h) \
-	settings.c \
-	settings.h \
+	remoteconfig.c \
+	remoteconfig.h \
 	misc.c \
 	misc.h \
 	utils.c \
@@ -60,7 +59,7 @@ libmokosuite_utils_la_LDFLAGS = \
 	@DBUS_LIBS@			\
 	@SQLITE_LIBS@
 
-settings-glue.h: settings.xml
+remoteconfig-glue.h: remoteconfig.xml
 	dbus-binding-tool --mode=glib-client --prefix=moko_settings --output=$@ $<
 
 EXTRA_DIST = \

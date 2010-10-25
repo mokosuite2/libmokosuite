@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<node>
+    <interface name="org.mokosuite.Config">
+
+        <method name="Save">
+            <arg type="b" name="result" direction="out" />
+        </method>
+        <method name="Reload">
+            <arg type="b" name="result" direction="out" />
+        </method>
+
+        <method name="GetInt">
+            <arg type="s" name="section" direction="in" />
+            <arg type="s" name="key" direction="in" />
+            <arg type="i" name="value" direction="out" />
+            <arg type="b" name="result" direction="out" />
+        </method>
+        <method name="GetDouble">
+            <arg type="s" name="section" direction="in" />
+            <arg type="s" name="key" direction="in" />
+            <arg type="i" name="value" direction="out" />
+            <arg type="d" name="result" direction="out" />
+        </method>
+        <method name="GetBool">
+            <arg type="s" name="section" direction="in" />
+            <arg type="s" name="key" direction="in" />
+            <arg type="b" name="value" direction="out" />
+            <arg type="b" name="result" direction="out" />
+        </method>
+        <method name="GetString">
+            <arg type="s" name="section" direction="in" />
+            <arg type="s" name="key" direction="in" />
+            <arg type="s" name="value" direction="out" />
+            <arg type="b" name="result" direction="out" />
+        </method>
+
+        <method name="SetInt">
+            <arg type="s" name="section" direction="in" />
+            <arg type="s" name="key" direction="in" />
+            <arg type="i" name="value" direction="in" />
+        </method>
+        <method name="SetDouble">
+            <arg type="s" name="section" direction="in" />
+            <arg type="s" name="key" direction="in" />
+            <arg type="d" name="value" direction="in" />
+        </method>
+        <method name="SetBool">
+            <arg type="s" name="section" direction="in" />
+            <arg type="s" name="key" direction="in" />
+            <arg type="b" name="value" direction="in" />
+        </method>
+        <method name="SetString">
+            <arg type="s" name="section" direction="in" />
+            <arg type="s" name="key" direction="in" />
+            <arg type="s" name="value" direction="in" />
+        </method>
+
+    </interface>
+</node>
