@@ -2,7 +2,7 @@
 [DBus (name = "org.mokosuite.Config")]
 public class RemoteConfigService : Object {
 
-    private bool _autosave;
+    private bool _autosave = true;
     private string _file;
     private KeyFile _cfg;
 
@@ -37,6 +37,7 @@ public class RemoteConfigService : Object {
 
     public bool save() {
         try {
+            DirUtils.create_with_parents(Path.get_dirname(_file), 0750);
             return FileUtils.set_contents(_file, _cfg.to_data());
         } catch (Error e) {
             warning("Unable to save configuration (%s)", e.message);

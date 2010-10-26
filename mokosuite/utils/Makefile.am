@@ -35,11 +35,11 @@ dbus-marshal.c: dbus-marshal.list dbus-marshal.h
 	|| ( rm -f dbus-marshal.tmp && exit 1 )
 
 dbus_sources = \
+	dbus-marshal.c \
+	dbus-marshal.h \
 	remote-config-glue.h
 
 BUILT_SOURCES = \
-	dbus-marshal.c \
-	dbus-marshal.h \
 	$(dbus_sources) \
 	.vala.stamp
 
