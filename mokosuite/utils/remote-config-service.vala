@@ -1,5 +1,3 @@
-[CCode (has_target = false)]
-public delegate void RemoteConfigServiceNotify (RemoteConfigService cfg, string section, string key, Value? value);
 
 [DBus (name = "org.mokosuite.Config")]
 public class RemoteConfigService : Object {
@@ -7,7 +5,6 @@ public class RemoteConfigService : Object {
     private bool _autosave;
     private string _file;
     private KeyFile _cfg;
-    private HashTable<string,void*> _callbacks;
 
     public KeyFile config { get { return _cfg; } }
     public string file { get { return _file; } }
@@ -16,9 +13,9 @@ public class RemoteConfigService : Object {
         set { _autosave = value; }
     }
 
-    public RemoteConfigService(DBus.Connection bus, string path, string cfg_file) {
-        _callbacks = new HashTable<string,void*>(str_hash, str_equal);
+    public signal void Changed(string section, string key, Value value);
 
+    public RemoteConfigService(DBus.Connection bus, string path, string cfg_file) {
         bus.register_object (path, this);
         _file = cfg_file;
         _cfg = new KeyFile();
@@ -30,20 +27,10 @@ public class RemoteConfigService : Object {
         }
     }
 
-    [DBus (visible=false)]
-    public void callback_add(string section, RemoteConfigServiceNotify callback) {
-        _callbacks.replace(section, (void*) callback);
-    }
-
-    [DBus (visible=false)]
-    public void callback_remove(string section) {
-        _callbacks.remove(section);
-    }
-
     private void invoke_callback(string section, string key, Value value) {
-        RemoteConfigServiceNotify cb = (RemoteConfigServiceNotify) _callbacks.lookup(section);
-        if (cb != null)
-            cb(this, section, key, value);
+        if (this._autosave)
+            this.save();
+        this.Changed(section, key, value);
     }
 
     /* === D-BUS API === */

@@ -57,5 +57,11 @@
             <arg type="s" name="value" direction="in" />
             <arg type="b" name="result" direction="out" />
         </method>
+
+        <signal name="Changed">
+            <arg type="s" name="section"/>
+            <arg type="s" name="key" />
+            <arg type="v" name="value" />
+        </signal>
     </interface>
 </node>

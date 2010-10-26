@@ -3,6 +3,7 @@
 
 #include "globals.h"
 #include "utils.h"
+#include "dbus-marshal.h"
 #include "remote-config.h"
 #include "remote-config-glue.h"
 
@@ -100,7 +101,35 @@ bool remote_config_reload(DBusGProxy* proxy, GError** error)
 }
 
 
+/* SIGNALS */
+
+void remote_config_changed_connect(DBusGProxy* proxy, GCallback callback, void* data)
+{
+    dbus_g_proxy_connect_signal(proxy, "Changed", G_CALLBACK (callback), data, NULL);
+}
+
+void remote_config_changed_disconnect(DBusGProxy* proxy, GCallback callback, void* data)
+{
+    dbus_g_proxy_disconnect_signal(proxy, "Changed", G_CALLBACK(callback), data);
+}
+
 /* CONSTRUCTOR */
+
+static GType dbus_get_type_changed_signal()
+{
+    static GType foo = 0;
+    if (G_UNLIKELY(foo == 0)) {
+        dbus_g_object_register_marshaller
+            (dbus_glib_marshal_VOID__STRING_STRING_VARIANT, G_TYPE_NONE,
+            G_TYPE_STRING, G_TYPE_STRING, G_TYPE_VALUE, G_TYPE_INVALID);
+
+        foo = dbus_g_type_get_struct("GValueArray",
+            G_TYPE_STRING, G_TYPE_STRING, G_TYPE_VALUE,
+            G_TYPE_INVALID);
+    }
+    return foo;
+}
+
 
 DBusGProxy* remote_config_connect(const char* bus_name, const char* path)
 {
@@ -118,6 +147,15 @@ DBusGProxy* remote_config_connect(const char* bus_name, const char* path)
         WARN("Couln't connect to %s on bus %s (%s)", path, bus_name, REMOTE_CONFIG_INTERFACE);
         g_object_unref(bus);
     }
+
+    dbus_g_proxy_add_signal(proxy, "Changed", dbus_get_type_changed_signal(), G_TYPE_INVALID);
+    /*
+    dbus_g_proxy_connect_signal(proxy, "Changed",
+                    G_CALLBACK
+                    (ogsmd_network_status_handler),
+                    frameworkdHandler->networkStatus,
+                    NULL);
+    */
 
     return proxy;
 }

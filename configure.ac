@@ -86,6 +86,9 @@ PKG_CHECK_MODULES(X11, x11)
 
 PKG_CHECK_MODULES(PHONEUTILS, libphone-utils)
 
+dnl glib-genmarshal
+AC_PATH_PROG(GLIB_GENMARSHAL, glib-genmarshal)
+
 dnl edje_cc for edj files
 AC_ARG_WITH(edje-cc,
 [  --with-edje-cc=PATH	specify a specific path to edje_cc],

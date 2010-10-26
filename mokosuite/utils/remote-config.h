@@ -23,6 +23,10 @@ bool remote_config_set_string(DBusGProxy* proxy, const char* section, const char
 bool remote_config_save(DBusGProxy* proxy, GError** error);
 bool remote_config_reload(DBusGProxy* proxy, GError** error);
 
+/* SIGNALS */
+void remote_config_changed_connect(DBusGProxy* proxy, GCallback callback, void* data);
+void remote_config_changed_disconnect(DBusGProxy* proxy, GCallback callback, void* data);
+
 /* CONSTRUCTOR */
 DBusGProxy* remote_config_connect(const char* bus_name, const char* path);
 

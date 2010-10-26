@@ -24,10 +24,24 @@ libmokosuite_utilsinclude_HEADERS = \
 
 lib_LTLIBRARIES = libmokosuite-utils.la
 
+dbus-marshal.h: dbus-marshal.list
+	( @GLIB_GENMARSHAL@ $< --prefix=dbus_glib_marshal --header > dbus-marshal.tmp \
+	&& mv dbus-marshal.tmp dbus-marshal.h ) \
+	|| ( rm -f dbus-marshal.tmp && exit 1 )
+
+dbus-marshal.c: dbus-marshal.list dbus-marshal.h
+	( @GLIB_GENMARSHAL@ $< --prefix=dbus_glib_marshal --body > dbus-marshal.tmp \
+	&& mv dbus-marshal.tmp dbus-marshal.c ) \
+	|| ( rm -f dbus-marshal.tmp && exit 1 )
+
 dbus_sources = \
 	remote-config-glue.h
 
-BUILT_SOURCES = $(dbus_sources) .vala.stamp
+BUILT_SOURCES = \
+	dbus-marshal.c \
+	dbus-marshal.h \
+	$(dbus_sources) \
+	.vala.stamp
 
 #sed -i 's/\#include <settingsdb.h>//' settingsdb.c
 .vala.stamp: $(libmokosuite_utils_VALASOURCES)
@@ -64,6 +78,7 @@ remote-config-glue.h: remote-config.xml
 
 EXTRA_DIST = \
 	mokosuite-utils.pc.in \
+	dbus-marshal.list \
 	$(BUILT_SOURCES) \
 	$(libmokosuite_utils_VALASOURCES:.vala=.c) \
 	$(libmokosuite_utils_VALASOURCES:.vala=.h)
