@@ -1,8 +1,8 @@
 [CCode (has_target = false)]
-public delegate void RemoteConfigNotify (RemoteConfig cfg, string section, string key, Value? value);
+public delegate void RemoteConfigServiceNotify (RemoteConfigService cfg, string section, string key, Value? value);
 
 [DBus (name = "org.mokosuite.Config")]
-public class RemoteConfig : Object {
+public class RemoteConfigService : Object {
 
     private bool _autosave;
     private string _file;
@@ -16,7 +16,7 @@ public class RemoteConfig : Object {
         set { _autosave = value; }
     }
 
-    public RemoteConfig(DBus.Connection bus, string path, string cfg_file) {
+    public RemoteConfigService(DBus.Connection bus, string path, string cfg_file) {
         _callbacks = new HashTable<string,void*>(str_hash, str_equal);
 
         bus.register_object (path, this);
@@ -31,7 +31,7 @@ public class RemoteConfig : Object {
     }
 
     [DBus (visible=false)]
-    public void callback_add(string section, RemoteConfigNotify callback) {
+    public void callback_add(string section, RemoteConfigServiceNotify callback) {
         _callbacks.replace(section, (void*) callback);
     }
 
@@ -41,7 +41,7 @@ public class RemoteConfig : Object {
     }
 
     private void invoke_callback(string section, string key, Value value) {
-        RemoteConfigNotify cb = (RemoteConfigNotify) _callbacks.lookup(section);
+        RemoteConfigServiceNotify cb = (RemoteConfigServiceNotify) _callbacks.lookup(section);
         if (cb != null)
             cb(this, section, key, value);
     }

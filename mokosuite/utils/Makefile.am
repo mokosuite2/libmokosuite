@@ -17,7 +17,7 @@ pkgconfig_DATA = mokosuite-utils.pc
 libmokosuite_utilsincludedir = $(includedir)/mokosuite-0/mokosuite/utils
 libmokosuite_utilsinclude_HEADERS = \
 	$(libmokosuite_utils_VALASOURCES:.vala=.h) \
-	remoteconfig.h \
+	remote-config.h \
 	misc.h \
 	dbus.h \
 	utils.h
@@ -25,7 +25,7 @@ libmokosuite_utilsinclude_HEADERS = \
 lib_LTLIBRARIES = libmokosuite-utils.la
 
 dbus_sources = \
-	remoteconfig-glue.h
+	remote-config-glue.h
 
 BUILT_SOURCES = $(dbus_sources) .vala.stamp
 
@@ -35,14 +35,14 @@ BUILT_SOURCES = $(dbus_sources) .vala.stamp
 	touch $@
 
 libmokosuite_utils_VALASOURCES = \
-	remoteconfig-service.vala
+	remote-config-service.vala
 
 libmokosuite_utils_la_SOURCES = \
 	$(dbus_sources) \
 	$(libmokosuite_utils_VALASOURCES:.vala=.c) \
 	$(libmokosuite_utils_VALASOURCES:.vala=.h) \
-	remoteconfig.c \
-	remoteconfig.h \
+	remote-config.c \
+	remote-config.h \
 	misc.c \
 	misc.h \
 	utils.c \
@@ -59,7 +59,7 @@ libmokosuite_utils_la_LDFLAGS = \
 	@DBUS_LIBS@			\
 	@SQLITE_LIBS@
 
-remoteconfig-glue.h: remoteconfig.xml
+remote-config-glue.h: remote-config.xml
 	dbus-binding-tool --mode=glib-client --prefix=moko_settings --output=$@ $<
 
 EXTRA_DIST = \
