@@ -33,12 +33,13 @@ libmokosuite_pim_la_LDFLAGS = \
 	@ELEMENTARY_LIBS@ 		\
 	@DBUS_LIBS@ 			\
 	@FSO_LIBS@	 		\
-	@PHONEUTILS_LIBS@ 		\
-	-ldb
+	@PHONEUTILS_LIBS@
 
 if ENABLE_CONTACTSDB_SQLITE
 AM_CPPFLAGS += @SQLITE_CFLAGS@
 libmokosuite_pim_la_LDFLAGS += $(SQLITE_LIBS)
+else
+libmokosuite_pim_la_LDFLAGS += -ldb
 endif
 
 
