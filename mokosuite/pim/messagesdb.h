@@ -29,11 +29,8 @@ struct _MessageThread {
     /* numero di messaggi totali */
     int total_count;
 
-    /* dati utente (ListItem) */
-    gpointer data;
-
-    /* dati utente (ContactEntry) */
-    gpointer data2;
+    /* dati utente (mokomessages: ListItem, ContactEntry, MsgList window) */
+    gpointer* data;
 };
 
 typedef struct _MessageThread MessageThread;
