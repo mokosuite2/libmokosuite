@@ -164,24 +164,29 @@ Evas_Object* mokowin_vbox_button_with_callback(MokoWin* mw, const char* label,
     return bt;
 }
 
-void mokowin_pack_start(MokoWin *mw, Evas_Object *obj)
+void mokowin_pack_start(MokoWin *mw, Evas_Object *obj, bool scroller_vbox)
 {
     g_return_if_fail(mw != NULL && obj != NULL && mw->vbox != NULL);
+    g_return_if_fail(scroller_vbox ? mw->scroller_vbox != NULL : TRUE);
 
-    if (mw->title)
+    if (mw->title && !scroller_vbox)
         elm_box_pack_after(mw->vbox, obj, mw->title);
     else
-        elm_box_pack_start(mw->vbox, obj);
+        elm_box_pack_start((mw->scroller_vbox || scroller_vbox) ?
+                mw->scroller_vbox : mw->vbox, obj);
 }
 
-void mokowin_pack_end(MokoWin *mw, Evas_Object *obj)
+void mokowin_pack_end(MokoWin *mw, Evas_Object *obj, bool scroller_vbox)
 {
     g_return_if_fail(mw != NULL && obj != NULL && mw->vbox != NULL);
+    g_return_if_fail(scroller_vbox ? mw->scroller_vbox != NULL : TRUE);
 
     if (mw->menu_hover)
-        elm_box_pack_before(mw->vbox, obj, mw->menu_hover);
+        elm_box_pack_before((mw->scroller_vbox || scroller_vbox) ?
+            mw->scroller_vbox : mw->vbox, obj, mw->menu_hover);
     else
-        elm_box_pack_end(mw->vbox, obj);
+        elm_box_pack_end((mw->scroller_vbox || scroller_vbox) ?
+                mw->scroller_vbox : mw->vbox, obj);
 }
 
 void mokowin_delete_data_set(MokoWin *mw, void* data)
@@ -360,7 +365,7 @@ void mokowin_set_title(MokoWin *mw, const char* title)
 
             // add to layout
             if (mw->vbox)
-                elm_box_pack_start(mw->vbox, mw->title);
+                elm_box_pack_start(mw->scroller_vbox ? mw->scroller_vbox : mw->vbox, mw->title);
             else {
                 // TODO add to layout
                 DEBUG("Adding title to layout is not supported yet.");

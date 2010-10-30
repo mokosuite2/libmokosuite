@@ -86,8 +86,8 @@ void mokowin_set_title(MokoWin *mw, const char* title);
 void mokowin_menu_enable(MokoWin *mw);
 void mokowin_menu_set(MokoWin *wm, Evas_Object *box);
 
-void mokowin_pack_start(MokoWin *mw, Evas_Object *obj);
-void mokowin_pack_end(MokoWin *mw, Evas_Object *obj);
+void mokowin_pack_start(MokoWin *mw, Evas_Object *obj, bool scroller_vbox);
+void mokowin_pack_end(MokoWin *mw, Evas_Object *obj, bool scroller_vbox);
 
 void mokowin_inner_add(MokoWin *mw, MokoInwin *inwin);
 void mokowin_inner_remove(MokoWin *mw, MokoInwin *inwin);
