@@ -4,6 +4,8 @@
 #include <glib.h>
 #include <time.h>
 
+#include <mokosuite/utils/utils.h>
+
 typedef enum
 {
     DIRECTION_OUTGOING,
@@ -33,12 +35,40 @@ struct _MessageThread {
     gpointer* data;
 };
 
-typedef struct _MessageThread MessageThread;
+struct _MessageEntry {
+    /* message id */
+    int id;
+
+    /* peer number */
+    char* peer;
+
+    /* content */
+    char* content;
+
+    /* direction */
+    MessageDirection direction;
+
+    /* timestamp */
+    guint64 timestamp;
+
+    /* user data */
+    gpointer* data;
+};
+
+typedef struct _MessageEntry    MessageEntry;
+typedef struct _MessageThread   MessageThread;
 
 typedef void (*MessageThreadFunc)(MessageThread*, gpointer);
+typedef void (*MessageFunc)(MessageEntry*, gpointer);
+
+void messagesdb_free_entry(MessageEntry* e);
 
 void messagesdb_foreach_thread(MessageThreadFunc func, gpointer data);
+void messagesdb_foreach(MessageFunc func, const char* peer, bool sort_desc, gpointer data);
 
-void messagesdb_init(MessageThreadFunc func, gpointer userdata);
+void messagesdb_connect(MessageFunc func, const char* peer, gpointer userdata);
+void messagesdb_disconnect(const char* peer);
+
+void messagesdb_init(MessageFunc func, gpointer userdata);
 
 #endif  /* __MESSAGESDB_H */

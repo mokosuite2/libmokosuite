@@ -22,6 +22,7 @@
 #include "globals.h"
 #include "gui.h"
 
+// TODO
 #define MENU_MAX_PRESS_TIME     800
 
 static void _remove_inwin_index(MokoWin* mw, int index)
