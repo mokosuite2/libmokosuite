@@ -3,6 +3,11 @@
 #include <mokosuite/utils/utils.h>
 #include <mokosuite/ui/gui.h>
 
+static void test_alert(void* data, Evas_Object* obj, void* event)
+{
+    moko_popup_alert_new(MOKO_WIN(data), "Test zio come stai? Senti ti volevo dire che va tutto bene e che qua si va a capo tutti i giorni!");
+}
+
 int main(int argc, char* argv[])
 {
     mokosuite_utils_init();
@@ -16,6 +21,7 @@ int main(int argc, char* argv[])
     elm_button_label_set(btn, "Hello world!");
     evas_object_size_hint_weight_set(btn, EVAS_HINT_EXPAND, 0.0);
     evas_object_size_hint_align_set(btn, EVAS_HINT_FILL, 0.0);
+    evas_object_smart_callback_add(btn, "clicked", test_alert, w);
     elm_box_pack_end(w->vbox, btn);
     evas_object_show(btn);
 

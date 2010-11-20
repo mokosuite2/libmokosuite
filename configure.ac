@@ -101,18 +101,6 @@ AC_ARG_WITH(edje-cc,
 ])
 AC_SUBST(edje_cc)
 
-dnl Settings storage
-AC_ARG_ENABLE(settings_config,
-    AC_HELP_STRING([--enable-settings-config], [Enable mokosuite.conf usage as settings storage (default: BerkeleyDB storage)]),
-    enable_settings_config=$enableval,
-    enable_settings_config=no)
-
-if test "x$enable_settings_config" != "xno"; then
-    AC_DEFINE(SETTINGSDB_CFG, 1, [Define to enable mokosuite.conf usage as settings storage])
-fi
-
-AM_CONDITIONAL(ENABLE_SETTINGS_CONFIG, test "x$enable_settings_config" = "xyes")
-
 dnl Contacts storage
 AC_ARG_ENABLE(contactsdb_sqlite,
     AC_HELP_STRING([--enable-contactsdb-sqlite], [Enable SQLite usage for contacts database (default: BerkeleyDB storage)]),

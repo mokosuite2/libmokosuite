@@ -58,7 +58,7 @@ MokoPopupAlert* moko_popup_alert_new_with_callback(MokoWin *parent, const char *
 MokoPopupAlert* moko_popup_alert_new(MokoWin *parent, const char *label)
 {
     /* costruisci la finestra */
-    MokoInwin *inwin = mokoinwin_new(parent);    
+    MokoInwin *inwin = mokoinwin_new(parent);
 
     g_return_val_if_fail(inwin != NULL || label != NULL, NULL);
 
@@ -80,10 +80,14 @@ MokoPopupAlert* moko_popup_alert_new(MokoWin *parent, const char *label)
     p->label = elm_label_add(MOKO_INWIN(p)->inwin);
     elm_label_label_set(p->label, label);
     elm_label_line_wrap_set(p->label, TRUE);
-    //elm_label_wrap_width_set(p->label, 400);
+
+    // prendi l'85% della larghezza della finestra padre
+    int w;
+    evas_object_geometry_get(parent->win, NULL, NULL, &w, NULL);
+    elm_label_wrap_width_set(p->label, (int) ((double) w / 100 * 85));
 
     evas_object_size_hint_weight_set(p->label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-    evas_object_size_hint_align_set(p->label, EVAS_HINT_FILL, EVAS_HINT_FILL);
+    evas_object_size_hint_align_set(p->label, 0.5, EVAS_HINT_FILL);
     evas_object_show(p->label);
 
     // padding frame
@@ -130,7 +134,7 @@ void moko_popup_status_activate(MokoPopupStatus *popup, const char *status)
 MokoPopupStatus* moko_popup_status_new(MokoWin *parent, const char *status)
 {
     /* costruisci la finestra */
-    MokoInwin *inwin = mokoinwin_new(parent);    
+    MokoInwin *inwin = mokoinwin_new(parent);
 
     g_return_val_if_fail(inwin != NULL, NULL);
 
@@ -237,7 +241,7 @@ Evas_Object* moko_popup_menu_add(MokoPopupMenu* popup, const char *label, int in
 MokoPopupMenu* moko_popup_menu_new(MokoWin *parent, const char *message, MokoPopupMenuStyle style, void* callback, void* data)
 {
     /* costruisci la finestra */
-    MokoInwin *inwin = mokoinwin_new(parent);    
+    MokoInwin *inwin = mokoinwin_new(parent);
 
     g_return_val_if_fail(inwin != NULL, NULL);
 
@@ -368,7 +372,7 @@ static void _pslider_change(void* data, Evas_Object* obj, void* event_info)
 MokoPopupSlider* moko_popup_slider_new(MokoWin *parent, const char *message, int value, void* callback, void* data)
 {
     /* costruisci la finestra */
-    MokoInwin *inwin = mokoinwin_new(parent);    
+    MokoInwin *inwin = mokoinwin_new(parent);
 
     g_return_val_if_fail(inwin != NULL, NULL);
 
