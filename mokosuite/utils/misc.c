@@ -57,6 +57,8 @@ gboolean map_get_bool(GHashTable* properties, const char* key, gboolean fallback
             value = g_value_get_boolean(gval);
         else if (fallback_int && G_VALUE_HOLDS_INT(gval))
             value = g_value_get_int(gval);
+        else if (fallback_int && G_VALUE_HOLDS_UCHAR(gval))
+            value = g_value_get_uchar(gval);
     }
 
     return value;
