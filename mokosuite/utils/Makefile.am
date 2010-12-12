@@ -4,6 +4,7 @@ AM_CPPFLAGS = \
 	@ECORE_CFLAGS@	\
 	@DBUS_CFLAGS@	\
 	@SQLITE_CFLAGS@	\
+	@NOTIFY_CFLAGS@ \
 	-Wall
 
 VALAC_ARGS = \
@@ -20,7 +21,8 @@ libmokosuite_utilsinclude_HEADERS = \
 	remote-config.h \
 	misc.h \
 	dbus.h \
-	utils.h
+	utils.h \
+	notify.h
 
 lib_LTLIBRARIES = libmokosuite-utils.la
 
@@ -63,15 +65,18 @@ libmokosuite_utils_la_SOURCES = \
 	utils.h \
 	dbus.c \
 	dbus.h \
+	notify.c \
+	notify.h \
 	globals.h
 
 libmokosuite_utils_la_LDFLAGS = \
-	-version-info 0:0:0 \
-	@GLIB_LIBS@			\
+	-version-info 0:0:0	\
+	@GLIB_LIBS@		\
 	@EINA_LIBS@ 		\
 	@ECORE_LIBS@		\
-	@DBUS_LIBS@			\
-	@SQLITE_LIBS@
+	@DBUS_LIBS@		\
+	@SQLITE_LIBS@		\
+	@NOTIFY_LIBS@
 
 remote-config-glue.h: remote-config.xml
 	dbus-binding-tool --mode=glib-client --prefix=moko_settings --output=$@ $<

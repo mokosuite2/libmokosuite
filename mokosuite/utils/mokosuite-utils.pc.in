@@ -8,6 +8,6 @@ datadir=@datadir@
 Name: mokosuite-utils
 Description: Mokosuite utilities library
 Version: @VERSION@
-Requires: eina ecore glib-2.0
+Requires: eina ecore glib-2.0 libnotify
 Libs: -L${libdir} -lmokosuite-utils
 Cflags: -I${includedir}/mokosuite-0
