@@ -47,6 +47,8 @@ void callsdb_foreach_call(CallEntryFunc func, gpointer data);
 
 void callsdb_set_call_new(int id, gboolean is_new);
 
+char* callsdb_get_call_path(int id);
+
 gboolean callsdb_delete_call(int id);
 
 gboolean callsdb_truncate(void);

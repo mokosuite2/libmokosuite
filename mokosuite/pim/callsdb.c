@@ -188,7 +188,7 @@ void callsdb_set_call_new(int id, gboolean is_new)
 
     if (opimdCallsBus == NULL) return;
 
-    char* path = g_strdup_printf("/org/freesmartphone/PIM/Calls/%d", id);
+    char* path = callsdb_get_call_path(id);
 
     set_call_new_data_t* cbdata = g_new0(set_call_new_data_t, 1);
     cbdata->timer = g_timer_new();
@@ -200,6 +200,10 @@ void callsdb_set_call_new(int id, gboolean is_new)
     g_free(path);
 }
 
+char* callsdb_get_call_path(int id)
+{
+    return g_strdup_printf("/org/freesmartphone/PIM/Calls/%d", id);
+}
 
 static void _cb_delete(GError* error, gpointer userdata)
 {
