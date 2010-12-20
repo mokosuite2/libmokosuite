@@ -2,7 +2,7 @@ DESCRIPTION = "Desktop environment and phone stack GUI for SHR - core library"
 HOMEPAGE = "http://gitorious.org/mokosuite2"
 AUTHOR = "Daniele Ricci"
 LICENSE = "GPLv3"
-DEPENDS = "elementary libfreesmartphone-glib libphone-utils eggdbus glib-2.0 dbus-glib alsa-lib db sqlite3 vala-native edje-native"
+DEPENDS = "elementary libfreesmartphone-glib libphone-utils eggdbus glib-2.0 dbus-glib alsa-lib db sqlite3 vala-native edje-native libnotify"
 SECTION = "misc/utils"
 
 PV = "1.0.99+gitr${SRCPV}"
