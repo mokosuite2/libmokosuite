@@ -25,6 +25,8 @@
 // TODO
 #define MENU_MAX_PRESS_TIME     800
 
+#define HOVER_BUTTON_SCALE      0.7
+
 static void _remove_inwin_index(MokoWin* mw, int index)
 {
     MokoInwin* inwin = MOKO_INWIN(eina_list_nth(mw->inners, index));
@@ -123,6 +125,7 @@ static void _key_up(void *mokowin, Evas *e, Evas_Object *obj, void *event_info)
 Evas_Object* mokowin_menu_hover_button(MokoWin* mw, Evas_Object* table, const char* label, int x, int y, int w, int h)
 {
     Evas_Object *bt = elm_button_add(mw->win);
+    elm_object_scale_set(bt, HOVER_BUTTON_SCALE);
     elm_button_label_set(bt, label);
 
     evas_object_size_hint_weight_set(bt, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -131,6 +134,13 @@ Evas_Object* mokowin_menu_hover_button(MokoWin* mw, Evas_Object* table, const ch
     evas_object_show(bt);
     elm_table_pack(table, bt, x, y, w, h);
 
+    return bt;
+}
+
+Evas_Object* mokowin_menu_hover_button_with_callback(MokoWin* mw, Evas_Object* table, const char* label, int x, int y, int w, int h, Evas_Smart_Cb callback, void* data)
+{
+    Evas_Object* bt = mokowin_menu_hover_button(mw, table, label, x, y, w, h);
+    evas_object_smart_callback_add(bt, "clicked", callback, data);
     return bt;
 }
 

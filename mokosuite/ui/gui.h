@@ -103,6 +103,8 @@ typedef struct _ScrollCallbackData ScrollCallbackData;
 void mokowin_delete_data_set(MokoWin *mw, void* data);
 
 Evas_Object* mokowin_menu_hover_button(MokoWin* mw, Evas_Object* table, const char* label, int x, int y, int w, int h);
+Evas_Object* mokowin_menu_hover_button_with_callback(MokoWin* mw, Evas_Object* table, const char* label, int x, int y, int w, int h, Evas_Smart_Cb callback, void* data);
+
 Evas_Object* mokowin_vbox_button(MokoWin* mw, const char* label, Evas_Object* after, Evas_Object* before);
 Evas_Object* mokowin_vbox_button_with_callback(MokoWin* mw, const char* label,
     Evas_Object* after, Evas_Object* before, Evas_Smart_Cb callback, void* data);

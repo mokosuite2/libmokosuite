@@ -51,6 +51,9 @@ struct _MessageEntry {
     /* timestamp */
     guint64 timestamp;
 
+    /* New flag */
+    gboolean is_new;
+
     /* user data */
     gpointer* data;
 };
@@ -63,11 +66,15 @@ typedef void (*MessageFunc)(MessageEntry*, gpointer);
 
 void messagesdb_free_entry(MessageEntry* e);
 
-void messagesdb_foreach_thread(MessageThreadFunc func, gpointer data);
-void messagesdb_foreach(MessageFunc func, const char* peer, bool sort_desc, gpointer data);
+void* messagesdb_foreach_thread(MessageThreadFunc func, gpointer data);
+void* messagesdb_foreach(MessageFunc func, const char* peer, bool sort_desc, int start, int limit, gpointer data);
+void messagesdb_foreach_stop(void* query);
 
 void messagesdb_connect(MessageFunc func, const char* peer, gpointer userdata);
 void messagesdb_disconnect(const char* peer);
+
+void messagesdb_set_message_new(int id, gboolean is_new);
+char* messagesdb_get_message_path(int id);
 
 void messagesdb_init(MessageFunc func, gpointer userdata);
 

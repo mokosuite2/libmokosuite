@@ -13,6 +13,7 @@ void g_value_free(gpointer data);
 
 GValue* g_value_from_string(const char* string);
 GValue* g_value_from_int(int number);
+GValue* g_value_from_bool(gboolean value);
 
 guint64 get_current_time(void);
 

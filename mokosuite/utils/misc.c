@@ -89,6 +89,15 @@ GValue* g_value_from_int(int number)
     return value;
 }
 
+GValue* g_value_from_bool(gboolean val)
+{
+    GValue* value = g_new0(GValue, 1);
+    g_value_init(value, G_TYPE_BOOLEAN);
+    g_value_set_boolean(value, val);
+
+    return value;
+}
+
 guint64 get_current_time(void)
 {
     GTimeVal tv = {0};

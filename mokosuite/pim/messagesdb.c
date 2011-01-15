@@ -23,6 +23,7 @@ typedef struct {
     gpointer func;
     gpointer userdata;
     char* path;
+    bool cancel;
 } query_data_t;
 
 typedef struct {
@@ -31,7 +32,6 @@ typedef struct {
 } message_callback_t;
 
 static GHashTable* callbacks = NULL;
-
 
 /* -- QUERY THREADS -- */
 
@@ -68,10 +68,13 @@ static void _cb_thread_next(GError* error, GHashTable* row, gpointer userdata)
 {
     query_data_t* data = userdata;
 
-    if (error) {
-        DEBUG("message row error: %s", error->message);
-        DEBUG("message loading took %f seconds", g_timer_elapsed(data->timer, NULL));
-        g_timer_destroy(data->timer);
+    if (error || data->cancel) {
+        // error but query not aborted
+        if (error && !data->cancel) {
+            DEBUG("message row error: %s", error->message);
+            DEBUG("message loading took %f seconds", g_timer_elapsed(data->timer, NULL));
+            g_timer_destroy(data->timer);
+        }
 
         // distruggi query
         opimd_messagequery_dispose(data->path, NULL, NULL);
@@ -93,6 +96,14 @@ static void _cb_thread_next(GError* error, GHashTable* row, gpointer userdata)
 static gboolean _retry_thread_query(gpointer userdata)
 {
     query_data_t* data = userdata;
+    // query aborted
+    if (data->cancel) {
+        g_hash_table_destroy(data->query);
+        g_timer_destroy(data->timer);
+        g_free(data);
+        return FALSE;
+    }
+
     g_timer_start(data->timer);
 
     opimd_messages_query_threads(data->query, _cb_thread_query, data);
@@ -104,15 +115,22 @@ static void _cb_thread_query(GError* error, const char* path, gpointer userdata)
     query_data_t* data = userdata;
     DEBUG("query took %f seconds", g_timer_elapsed(data->timer, NULL));
 
-    if (error) {
-        DEBUG("thread query error: (%d) %s", error->code, error->message);
+    if (error || data->cancel) {
+        if (error && !data->cancel) {
+            DEBUG("thread query error: (%d) %s", error->code, error->message);
 
-        // opimd non ancora caricato? Riprova in 5 secondi
-        if (FREESMARTPHONE_GLIB_IS_DBUS_ERROR(error, FREESMARTPHONE_GLIB_DBUS_ERROR_SERVICE_NOT_AVAILABLE)) {
-            g_timeout_add_seconds(5, _retry_thread_query, data);
-            return;
+            // opimd non ancora caricato? Riprova in 5 secondi
+            if (FREESMARTPHONE_GLIB_IS_DBUS_ERROR(error, FREESMARTPHONE_GLIB_DBUS_ERROR_SERVICE_NOT_AVAILABLE)) {
+                g_timeout_add_seconds(5, _retry_thread_query, data);
+                return;
+            }
+        }
+        else {
+            // no error, destroy query
+            opimd_messagequery_dispose(path, NULL, NULL);
         }
 
+        // no error, query aborted
         g_hash_table_destroy(data->query);
         g_timer_destroy(data->timer);
         g_free(data);
@@ -125,10 +143,10 @@ static void _cb_thread_query(GError* error, const char* path, gpointer userdata)
     opimd_messagequery_get_result(data->path, _cb_thread_next, data);
 }
 
-void messagesdb_foreach_thread(MessageThreadFunc func, gpointer data)
+void* messagesdb_foreach_thread(MessageThreadFunc func, gpointer data)
 {
-    g_return_if_fail(func != NULL);
-    if (opimdMessagesBus == NULL) return;
+    g_return_val_if_fail(func != NULL, NULL);
+    if (opimdMessagesBus == NULL) return NULL;
 
     query_data_t* cbdata = g_new0(query_data_t, 1);
 
@@ -139,6 +157,7 @@ void messagesdb_foreach_thread(MessageThreadFunc func, gpointer data)
     cbdata->func = func;
 
     opimd_messages_query_threads(cbdata->query, _cb_thread_query, cbdata);
+    return cbdata;
 }
 
 /* -- QUERY -- */
@@ -160,6 +179,7 @@ static MessageEntry* handle_message_data(GHashTable* row)
         e->content = g_strdup(map_get_string(row, "Content"));
         e->timestamp = map_get_int(row, "Timestamp");
         e->direction = direction;
+        e->is_new = map_get_bool(row, "New", TRUE);
 
         return e;
     }
@@ -173,12 +193,16 @@ static void _cb_next(GError* error, GHashTable* row, gpointer userdata)
 {
     query_data_t* data = userdata;
 
-    if (error) {
-        DEBUG("message row error: %s", error->message);
-        DEBUG("message loading took %f seconds", g_timer_elapsed(data->timer, NULL));
-        g_timer_destroy(data->timer);
+    if (error || data->cancel) {
+        // error but query not aborted
+        if (error && !data->cancel) {
+            DEBUG("message row error: %s", error->message);
+            DEBUG("message loading took %f seconds", g_timer_elapsed(data->timer, NULL));
+            g_timer_destroy(data->timer);
+        }
 
-        if (data->func)
+        // call final callback only if query is not aborted
+        if (data->func && !data->cancel)
             ((MessageFunc)data->func)(NULL, data->userdata);
 
         // distruggi query
@@ -201,6 +225,14 @@ static void _cb_next(GError* error, GHashTable* row, gpointer userdata)
 static gboolean _retry_query(gpointer userdata)
 {
     query_data_t* data = userdata;
+    // query aborted
+    if (data->cancel) {
+        g_hash_table_destroy(data->query);
+        g_timer_destroy(data->timer);
+        g_free(data);
+        return FALSE;
+    }
+
     g_timer_start(data->timer);
 
     opimd_messages_query(data->query, _cb_query, data);
@@ -212,13 +244,19 @@ static void _cb_query(GError* error, const char* path, gpointer userdata)
     query_data_t* data = userdata;
     DEBUG("query took %f seconds", g_timer_elapsed(data->timer, NULL));
 
-    if (error) {
-        DEBUG("thread query error: (%d) %s", error->code, error->message);
+    if (error || data->cancel) {
+        if (error && !data->cancel) {
+            DEBUG("thread query error: (%d) %s", error->code, error->message);
 
-        // opimd non ancora caricato? Riprova in 5 secondi
-        if (FREESMARTPHONE_GLIB_IS_DBUS_ERROR(error, FREESMARTPHONE_GLIB_DBUS_ERROR_SERVICE_NOT_AVAILABLE)) {
-            g_timeout_add_seconds(5, _retry_query, data);
-            return;
+            // opimd non ancora caricato? Riprova in 5 secondi
+            if (FREESMARTPHONE_GLIB_IS_DBUS_ERROR(error, FREESMARTPHONE_GLIB_DBUS_ERROR_SERVICE_NOT_AVAILABLE)) {
+                g_timeout_add_seconds(5, _retry_query, data);
+                return;
+            }
+        }
+        else {
+            // no error, destroy query
+            opimd_messagequery_dispose(path, NULL, NULL);
         }
 
         g_hash_table_destroy(data->query);
@@ -233,10 +271,16 @@ static void _cb_query(GError* error, const char* path, gpointer userdata)
     opimd_messagequery_get_result(data->path, _cb_next, data);
 }
 
-void messagesdb_foreach(MessageFunc func, const char* peer, bool sort_desc, gpointer data)
+void messagesdb_foreach_stop(void* query)
 {
-    g_return_if_fail(func != NULL);
-    if (opimdMessagesBus == NULL) return;
+    query_data_t* cbdata = (query_data_t*) query;
+    cbdata->cancel = TRUE;
+}
+
+void* messagesdb_foreach(MessageFunc func, const char* peer, bool sort_desc, int start, int limit, gpointer data)
+{
+    g_return_val_if_fail(func != NULL, NULL);
+    if (opimdMessagesBus == NULL) return NULL;
 
     query_data_t* cbdata = g_new0(query_data_t, 1);
 
@@ -251,10 +295,19 @@ void messagesdb_foreach(MessageFunc func, const char* peer, bool sort_desc, gpoi
     if (sort_desc)
         g_hash_table_insert(cbdata->query, g_strdup("_sortdesc"), g_value_from_int(1));
 
+    // start
+    if (start >= 0)
+        g_hash_table_insert(cbdata->query, g_strdup("_limit_start"), g_value_from_int(start));
+
+    // limit
+    if (limit >= 0)
+        g_hash_table_insert(cbdata->query, g_strdup("_limit"), g_value_from_int(limit));
+
     cbdata->userdata = data;
     cbdata->func = func;
 
     opimd_messages_query(cbdata->query, _cb_query, cbdata);
+    return cbdata;
 }
 
 typedef struct {
@@ -320,6 +373,48 @@ void messagesdb_connect(MessageFunc func, const char* peer, gpointer userdata)
 void messagesdb_disconnect(const char* peer)
 {
     g_hash_table_remove(callbacks, peer);
+}
+
+typedef struct {
+    GHashTable* query;
+    GTimer* timer;
+} set_message_new_data_t;
+
+static void _cb_set_call_new(GError* error, gpointer userdata)
+{
+    if (error) {
+        EINA_LOG_WARN("error: %s", error->message);
+    }
+
+    set_message_new_data_t* data = userdata;
+    EINA_LOG_DBG("query took %f seconds", g_timer_elapsed(data->timer, NULL));
+
+    g_timer_destroy(data->timer);
+    g_hash_table_destroy(data->query);
+    g_free(data);
+}
+
+void messagesdb_set_message_new(int id, gboolean is_new)
+{
+    if (id < 0) return;
+
+    if (opimdMessagesBus == NULL) return;
+
+    char* path = messagesdb_get_message_path(id);
+
+    set_message_new_data_t* cbdata = g_new0(set_message_new_data_t, 1);
+    cbdata->timer = g_timer_new();
+    cbdata->query = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_value_free);
+
+    g_hash_table_insert(cbdata->query, g_strdup("New"), g_value_from_int(is_new));
+
+    opimd_message_update(path, cbdata->query, _cb_set_call_new, cbdata);
+    g_free(path);
+}
+
+char* messagesdb_get_message_path(int id)
+{
+    return g_strdup_printf("/org/freesmartphone/PIM/Messages/%d", id);
 }
 
 void messagesdb_init(MessageFunc func, gpointer userdata)
