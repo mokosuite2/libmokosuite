@@ -196,9 +196,12 @@ void mokowin_pack_end(MokoWin *mw, Evas_Object *obj, bool scroller_vbox)
     g_return_if_fail(mw != NULL && obj != NULL && mw->vbox != NULL);
     g_return_if_fail(scroller_vbox ? mw->scroller_vbox != NULL : TRUE);
 
-    if (mw->menu_hover)
-        elm_box_pack_before((mw->scroller_vbox || scroller_vbox) ?
-            mw->scroller_vbox : mw->vbox, obj, mw->menu_hover);
+    if (mw->menu_hover) {
+        if (mw->scroller_vbox && scroller_vbox)
+            elm_box_pack_before(mw->scroller_vbox, obj, mw->menu_hover);
+        else
+            elm_box_pack_end(mw->vbox, obj);
+    }
     else
         elm_box_pack_end((mw->scroller_vbox && scroller_vbox) ?
                 mw->scroller_vbox : mw->vbox, obj);
