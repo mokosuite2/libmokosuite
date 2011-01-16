@@ -74,8 +74,9 @@ void messagesdb_connect(MessageFunc func, const char* peer, gpointer userdata);
 void messagesdb_disconnect(const char* peer);
 
 void messagesdb_set_message_new(int id, gboolean is_new);
+void messagesdb_delete_message(int id);
 char* messagesdb_get_message_path(int id);
 
-void messagesdb_init(MessageFunc func, gpointer userdata);
+void messagesdb_init(MessageFunc new_message_func, MessageFunc delete_message_func, gpointer userdata);
 
 #endif  /* __MESSAGESDB_H */

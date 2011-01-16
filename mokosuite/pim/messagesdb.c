@@ -313,13 +313,13 @@ void* messagesdb_foreach(MessageFunc func, const char* peer, bool sort_desc, int
 typedef struct {
     MessageFunc func;
     gpointer userdata;
-} new_message_data_t;
+} message_signal_data_t;
 
 static void _new_message_data(GError* error, GHashTable* row, gpointer userdata)
 {
     g_return_if_fail(error == NULL);
 
-    new_message_data_t* data = userdata;
+    message_signal_data_t* data = userdata;
     MessageEntry* e = handle_message_data(row);
 
     if (e != NULL) {
@@ -346,6 +346,18 @@ static void _new_message(gpointer userdata, const char* path)
 
     // ottieni informazioni sul messaggio
     opimd_message_get_content(path, _new_message_data, userdata);
+}
+
+static void _message_deleted(gpointer userdata, const char* path)
+{
+    DEBUG("message deleted %s", path);
+
+    // delete callback
+    message_signal_data_t* data = userdata;
+
+    // main callback
+    if (data->func)
+        (data->func)(NULL, data->userdata);
 }
 
 void messagesdb_free_entry(MessageEntry* e)
@@ -412,20 +424,39 @@ void messagesdb_set_message_new(int id, gboolean is_new)
     g_free(path);
 }
 
+void messagesdb_delete_message(int id)
+{
+    if (id < 0) return;
+
+    if (opimdMessagesBus == NULL) return;
+
+    char* path = messagesdb_get_message_path(id);
+
+    opimd_message_delete(path, NULL, NULL);
+    g_free(path);
+}
+
 char* messagesdb_get_message_path(int id)
 {
     return g_strdup_printf("/org/freesmartphone/PIM/Messages/%d", id);
 }
 
-void messagesdb_init(MessageFunc func, gpointer userdata)
+void messagesdb_init(MessageFunc new_message_func, MessageFunc delete_message_func, gpointer userdata)
 {
+    message_signal_data_t* data;
+
     opimd_messages_dbus_connect();
 
     if (opimdMessagesBus == NULL)
         WARN("unable to connect to messages database; will not be able to read messages");
 
-    new_message_data_t* data = g_new(new_message_data_t, 1);
-    data->func = func;
+    data = g_new(message_signal_data_t, 1);
+    data->func = new_message_func;
     data->userdata = userdata;
     opimd_messages_new_message_connect(_new_message, data);
+
+    data = g_new(message_signal_data_t, 1);
+    data->func = delete_message_func;
+    data->userdata = userdata;
+    opimd_messages_deleted_message_connect(_message_deleted, data);
 }
