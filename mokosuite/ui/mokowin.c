@@ -25,7 +25,7 @@
 // TODO
 #define MENU_MAX_PRESS_TIME     800
 
-#define HOVER_BUTTON_SCALE      0.7
+//#define HOVER_BUTTON_SCALE      0.7
 
 static void _remove_inwin_index(MokoWin* mw, int index)
 {
@@ -125,7 +125,7 @@ static void _key_up(void *mokowin, Evas *e, Evas_Object *obj, void *event_info)
 Evas_Object* mokowin_menu_hover_button(MokoWin* mw, Evas_Object* table, const char* label, int x, int y, int w, int h)
 {
     Evas_Object *bt = elm_button_add(mw->win);
-    elm_object_scale_set(bt, HOVER_BUTTON_SCALE);
+    //elm_object_scale_set(bt, HOVER_BUTTON_SCALE);
     elm_button_label_set(bt, label);
 
     evas_object_size_hint_weight_set(bt, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
